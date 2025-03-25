@@ -1,6 +1,56 @@
+import { useState } from 'react';
+import { addDoc, collection } from 'firebase/firestore';
+import { db } from '../../firebase';
 import { Phone, Mail, MapPin, Clock, Flame, BookOpen } from 'lucide-react';
 
 const Contact = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    service: '',
+    prayer: '',
+    status: 'pending',
+    createdAt: new Date()
+  });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    try {
+      await addDoc(collection(db, "prayerRequests"), {
+        ...formData,
+        createdAt: new Date()
+      });
+      setSubmitSuccess(true);
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        service: '',
+        prayer: '',
+        status: 'pending',
+        createdAt: new Date()
+      });
+    } catch (error) {
+      console.error("Error submitting prayer request: ", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div id="contact" className="py-24 bg-gradient-to-b from-orange-50 to-amber-50 relative overflow-hidden">
       {/* Sacred pattern overlay */}
@@ -81,85 +131,115 @@ const Contact = () => {
             </div>
           </div>
 
-          {/* Contact Form */}
-          <form className="space-y-6 bg-white p-8 rounded-xl shadow-md border-l-4 border-red-500 hover:shadow-lg transition-shadow">
-            <h3 className="text-2xl font-semibold text-orange-900 mb-6 font-serif flex items-center">
-              <svg className="h-6 w-6 text-red-500 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2L4 12l8 10 8-10z"/>
-              </svg>
-              Blessing Request Form
-            </h3>
-            
+          <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 rounded-xl shadow-md border-l-4 border-red-500 hover:shadow-lg transition-shadow">
+          <h3 className="text-2xl font-semibold text-orange-900 mb-6 font-serif flex items-center">
+            <svg className="h-6 w-6 text-red-500 mr-2" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2L4 12l8 10 8-10z"/>
+            </svg>
+            Blessing Request Form
+          </h3>
+
+          {submitSuccess && (
+            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative">
+              Your prayer request has been submitted successfully! We will contact you soon.
+            </div>
+          )}
+          
+          <div>
+            <label className="block text-orange-800 font-medium mb-2">Your Divine Name*</label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-amber-200 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+              placeholder="Enter your name"
+              required
+            />
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-orange-800 font-medium mb-2">Your Divine Name*</label>
+              <label className="block text-orange-800 font-medium mb-2">Sacred Email*</label>
               <input
-                type="text"
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
                 className="w-full px-4 py-2 border border-amber-200 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                placeholder="Enter your name"
+                placeholder="your@email.com"
                 required
               />
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-orange-800 font-medium mb-2">Sacred Email*</label>
-                <input
-                  type="email"
-                  className="w-full px-4 py-2 border border-amber-200 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                  placeholder="your@email.com"
-                  required
-                />
-              </div>
-              
-              <div>
-                <label className="block text-orange-800 font-medium mb-2">Mantra Contact*</label>
-                <input
-                  type="tel"
-                  className="w-full px-4 py-2 border border-amber-200 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                  placeholder="+91 XXXXX XXXXX"
-                  required
-                />
-              </div>
-            </div>
-            
             <div>
-              <label className="block text-orange-800 font-medium mb-2">Select Service*</label>
-              <select className="w-full px-4 py-2 border border-amber-200 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent">
-                <option>-- Choose Divine Service --</option>
-                <option>Birth Chart Analysis</option>
-                <option>Hanuman Puja</option>
-                <option>Mangal Dosha Solution</option>
-                <option>Marriage Compatibility</option>
-                <option>Career Guidance</option>
-                <option>Personal Consultation</option>
-              </select>
-            </div>
-            
-            <div>
-              <label className="block text-orange-800 font-medium mb-2">Your Prayer*</label>
-              <textarea
-                className="w-full px-4 py-2 border border-amber-200 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent h-32"
-                placeholder="Share your concerns and prayers..."
+              <label className="block text-orange-800 font-medium mb-2">Mantra Contact*</label>
+              <input
+                type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border border-amber-200 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                placeholder="+91 XXXXX XXXXX"
                 required
-              ></textarea>
+              />
             </div>
-            
-            <button
-              type="submit"
-              className="w-full bg-gradient-to-r from-amber-600 to-orange-600 text-white py-3 px-6 rounded-md hover:from-amber-700 hover:to-orange-700 transition-colors shadow-md flex items-center justify-center"
+          </div>
+          
+          <div>
+            <label className="block text-orange-800 font-medium mb-2">Select Service*</label>
+            <select 
+              name="service"
+              value={formData.service}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-amber-200 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+              required
             >
-              <Flame className="h-5 w-5 mr-2" />
-              Submit for Divine Blessings
-            </button>
+              <option value="">-- Choose Divine Service --</option>
+              <option value="Birth Chart Analysis">Birth Chart Analysis</option>
+              <option value="Hanuman Puja">Hanuman Puja</option>
+              <option value="Mangal Dosha Solution">Mangal Dosha Solution</option>
+              <option value="Marriage Compatibility">Marriage Compatibility</option>
+              <option value="Career Guidance">Career Guidance</option>
+              <option value="Personal Consultation">Personal Consultation</option>
+            </select>
+          </div>
+          
+          <div>
+            <label className="block text-orange-800 font-medium mb-2">Your Prayer*</label>
+            <textarea
+              name="prayer"
+              value={formData.prayer}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-amber-200 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent h-32"
+              placeholder="Share your concerns and prayers..."
+              required
+            ></textarea>
+          </div>
+          
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full bg-gradient-to-r from-amber-600 to-orange-600 text-white py-3 px-6 rounded-md hover:from-amber-700 hover:to-orange-700 transition-colors shadow-md flex items-center justify-center disabled:opacity-70"
+          >
+            {isSubmitting ? (
+              'Submitting...'
+            ) : (
+              <>
+                <Flame className="h-5 w-5 mr-2" />
+                Submit for Divine Blessings
+              </>
+            )}
+          </button>
 
-            <p className="text-sm text-orange-700 text-center">
-              *All requests are sanctified with Hanuman Chalisa recitation
-            </p>
-          </form>
-        </div>
+          <p className="text-sm text-orange-700 text-center">
+            *All requests are sanctified with Hanuman Chalisa recitation
+          </p>
+        </form>
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default Contact;

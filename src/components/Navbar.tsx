@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -9,15 +10,24 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex-shrink-0">
-            <h1 className="text-2xl font-bold">Balaji Jyotish Sansthan</h1>
+            <Link to="/" className="text-2xl font-bold">Balaji Jyotish Sansthan</Link>
           </div>
           
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-4">
-              <a href="#home" className="hover:bg-indigo-800 px-3 py-2 rounded-md">Home</a>
-              <a href="#services" className="hover:bg-indigo-800 px-3 py-2 rounded-md">Services</a>
-              <a href="#about" className="hover:bg-indigo-800 px-3 py-2 rounded-md">About</a>
-              <a href="#contact" className="hover:bg-indigo-800 px-3 py-2 rounded-md">Contact</a>
+              <Link to="/" className="hover:bg-indigo-800 px-3 py-2 rounded-md">Home</Link>
+              <Link to="#services" className="hover:bg-indigo-800 px-3 py-2 rounded-md">Services</Link>
+              <Link to="#about" className="hover:bg-indigo-800 px-3 py-2 rounded-md">About</Link>
+              <Link to="#contact" className="hover:bg-indigo-800 px-3 py-2 rounded-md">Contact</Link>
+              {/* <Link 
+                to="/admin/prayer-requests" 
+                className="bg-amber-600 hover:bg-amber-700 px-3 py-2 rounded-md flex items-center"
+              >
+                <span className="hidden sm:inline">Admin</span>
+                <svg className="h-5 w-5 sm:ml-1" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2L4 12l8 10 8-10z"/>
+                </svg>
+              </Link> */}
             </div>
           </div>
           
@@ -33,12 +43,46 @@ const Navbar = () => {
       </div>
 
       {isOpen && (
-        <div className="md:hidden">
+        <div className="md:hidden bg-red-700">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            <a href="#home" className="block hover:bg-indigo-800 px-3 py-2 rounded-md">Home</a>
-            <a href="#services" className="block hover:bg-indigo-800 px-3 py-2 rounded-md">Services</a>
-            <a href="#about" className="block hover:bg-indigo-800 px-3 py-2 rounded-md">About</a>
-            <a href="#contact" className="block hover:bg-indigo-800 px-3 py-2 rounded-md">Contact</a>
+            <Link 
+              to="/" 
+              onClick={() => setIsOpen(false)}
+              className="block hover:bg-indigo-800 px-3 py-2 rounded-md"
+            >
+              Home
+            </Link>
+            <Link 
+              to="#services" 
+              onClick={() => setIsOpen(false)}
+              className="block hover:bg-indigo-800 px-3 py-2 rounded-md"
+            >
+              Services
+            </Link>
+            <Link 
+              to="#about" 
+              onClick={() => setIsOpen(false)}
+              className="block hover:bg-indigo-800 px-3 py-2 rounded-md"
+            >
+              About
+            </Link>
+            <Link 
+              to="#contact" 
+              onClick={() => setIsOpen(false)}
+              className="block hover:bg-indigo-800 px-3 py-2 rounded-md"
+            >
+              Contact
+            </Link>
+            {/* <Link 
+              to="/admin/prayer-requests" 
+              onClick={() => setIsOpen(false)}
+              className="block bg-amber-600 hover:bg-amber-700 px-3 py-2 rounded-md flex items-center"
+            >
+              <span>Admin</span>
+              <svg className="h-5 w-5 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2L4 12l8 10 8-10z"/>
+              </svg>
+            </Link> */}
           </div>
         </div>
       )}
